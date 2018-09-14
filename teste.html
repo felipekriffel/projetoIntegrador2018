@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    
+    <script>
+        class Class{
+            constructor(){
+                
+                this.slider = document.createElement("input")
+                this.slider.type = "range"
+                this.slider.addEventListener("click", ev=>{
+                    console.log(this.a.t.x.value);
+                    
+                })
+                this.a = {
+                    t : new Test(this.slider)
+                }
+                document.body.appendChild(this.slider)
+                
+            }
+            
+        }
+        
+        class Test{
+            constructor(slider){
+                this.x = slider   
+            }
+        }
+
+        let obj = new Class()
+
+    </script>
+</body>
+</html>
