@@ -3,47 +3,51 @@ class Graphic{
         Classe de gráfico cartesiano para ser utilizado com o Framework p5.js
      */
 
-    constructor(width, height, scalePorc){
-        this.width = width //largura do grafico 
-        this.height = height //altura do grafico
+    constructor(div, widthPor, heightPor, scalePorc){
+        this.width = div.offsetWidth*widthPor/100 //largura do grafico 
+        this.height = div.offsetHeight*heightPor/100 //altura do grafico
         this.scale = scalePorc * height //numero de pixels por unidade
         this.origin = {
-            x: (0.06*this.height), //origem horizontal do grafico
+            x: (0.06*this.width), //origem horizontal do grafico
             y: (0.94*this.height) //origem vertical do grafico
         }
         this.limits = {
-            x: (0.95*width), //limite horizontal do grafico
-            y: (0.06*height) //limite vertical do grafico
+            x: (0.95*this.width), //limite horizontal do grafico
+            y: (0.06*this.height) //limite vertical do grafico
         }
         this.construct = false //define se deve executar o método de construção ou não
-        this.i //valor de referencia para o iterador do grafico
+        this.i = 0 //valor de referencia para o iterador do grafico
 
         this.species = [] //array com todas as espécies envolvidas
 
-        this.canvas = createCanvas(width, height) //o elemento canvas utilizado
+        this.superiorContainer = div
+        this.canvas = createCanvas(this.width, this.height) //o elemento canvas utilizado
         this.sliders = [] //array com todos os sliders usados no grafico
         this.slidersContainer //elemento que contém todos os sliders
+        this.graphDiv = ""
 
         this.buttons =  {
             startBt : "",
             stopBt : "",
             restartBt : ""
         }
+
         
         this.getPlane()
         this.constructHTML()
     }
+    
 
     constructHTML(){
         //criando div pro grafico
-        let graphDiv = document.createElement("div")
-        graphDiv.className = "graph-container"
-        graphDiv.style.display = "flex"
-        graphDiv.style.flexDirection = "row"
-        document.body.appendChild(graphDiv)
+        this.graphDiv = document.createElement("div")
+        this.graphDiv.className = "graph-container"
+        this.graphDiv.style.display = "flex"
+        this.graphDiv.style.flexDirection = "row"
+        document.body.appendChild(this.graphDiv)
 
         //adicionar canvas à div
-        graphDiv.appendChild(this.canvas.elt)
+        this.graphDiv.appendChild(this.canvas.elt)
 
         //criar div pra botões
         let btDiv = document.createElement("div")
@@ -76,10 +80,11 @@ class Graphic{
         btDiv.appendChild(this.buttons.startBt)
         btDiv.appendChild(this.buttons.stopBt)
         btDiv.appendChild(this.buttons.restartBt)
-
-        //adicionar btDiv ao documento
-        document.body.appendChild(btDiv)
-
+        
+        //adiciona div do grafico à div superior
+        this.superiorContainer.appendChild(this.graphDiv)
+        //adiciona botãoo à div do grafico
+        this.superiorContainer.appendChild(btDiv)
     }
 
     run(){
@@ -121,7 +126,7 @@ class Graphic{
     constructSliders(){
         this.slidersContainer = document.createElement("div")
         this.slidersContainer.className = "sliders-superior"
-        document.querySelector(".graph-container").appendChild(this.slidersContainer)
+        this.graphDiv.appendChild(this.slidersContainer)
     }
 
     //constroi slider com valor atribuido
