@@ -6,20 +6,19 @@ function mouseClicked(){
     
 }
 
-// funcao de primeiro grau com Currying
+//funcao 
 var funcSegGrau = (a,b,c)=>  
-    //retorna uma função de primeiro grau em funcao de x com os valores a e b fornecidos
-    x => {
-        return a * x * x + b *x + c
-    }
+x => {
+    return a * x * x + b *x + c
+}
 
 //retorna uma função seno em funcao de x com os valores a, b, c e d fornecidos
 var funcSeno = (a,b,c,d) => 
 x => {
-    return a + b * sin( c * x  + d)
+    return a + b * Math.sin( c * x  + d)
 }
-var i //Referencia para o iterador 
 
+// funcao de primeiro grau com Currying
 var funcPrimGrau  = (a,b) => x => {
     return a*x + b
 }
@@ -31,8 +30,16 @@ t =>{
 
 var func
 var grafico
-function setup(){
-    
+
+grafico = new Graphic(document.querySelector("div.grafico"), 80, 90, 0.05)
+grafico.setSpecie("Teste", funcSeno, '#ff0000', [
+    grafico.createSlider("Valor de A", true, 0, 10, 1),
+    grafico.createSlider("Valor de B", true, 0, 10, 1),
+    grafico.createSlider("Valor de C", true, 0, 5, 0.1),
+    grafico.createSlider("Valor de D", true, 0, 5, 0.1)
+])
+
+/* function setup(){   
     grafico = new Graphic(document.querySelector("div.grafico"), 80, 90, 0.1)
     grafico.setSpecie("Teste", funcSeno, '#ff0000', [
         grafico.createSlider("Valor de A", true, 0, 10, 1),
@@ -43,8 +50,6 @@ function setup(){
 }
 
 function draw(){   
-    /* i = i || grafico.origin.x //
-    if(construct) grafico.constructResults(i)
-    if(i<grafico.limits.x && construct) i++     */
     grafico.run();
 }   
+ */

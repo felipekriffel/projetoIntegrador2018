@@ -32,7 +32,7 @@ class Specie{
 
     getSliderValues(){
         //pega os valores dos sliders no array passado
-        return this.sliders.map((slider)=> Number(slider.value))
+        return this.sliders.map((slider)=> slider.valueAsNumber)
     }
 
     curryFunction(){
