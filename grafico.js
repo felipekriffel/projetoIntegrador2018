@@ -3,14 +3,13 @@ class Graphic extends p5{
     Classe de gráfico cartesiano para ser utilizado com o Framework p5.js
     */
    
-   constructor(div, widthPor, heightPor, scalePorc){
-       super(()=>{},false,false)
-       this.done = false
-       this.wid = div.offsetWidth*widthPor/100 //largura do grafico 
-       this.hei = div.offsetHeight*heightPor/100 //altura do grafico
-       this.scale = scalePorc * this.hei //numero de pixels por unidade
-       this.origin = {
-           x: (0.06*this.wid), //origem horizontal do grafico
+    constructor(div, widthPor, heightPor, scalePorc){
+        super(()=>{},false,false)
+        this.wid = div.offsetWidth*widthPor/100 //largura do grafico 
+        this.hei = div.offsetHeight*heightPor/100 //altura do grafico
+        this.scale = scalePorc * this.hei //numero de pixels por unidade
+        this.origin = {
+           x: (0.06*this.hei), //origem horizontal do grafico
            y: (0.94*this.hei) //origem vertical do grafico
         }
         this.limits = {
@@ -20,9 +19,10 @@ class Graphic extends p5{
         this.construct = false //define se deve executar o método de construção ou não
         this.i = 0 //valor de referencia para o iterador do grafico
         
-        this.species = [] //array com todas as espécies envolvidas
+        this.functions = [] //array com todas as espécies envolvidas
         
         this.superiorContainer = div
+        this.canvasContainer = document.createElement("div")
         this.canvas //o elemento canvas utilizado
         // console.log(this.canvas.elt)
         this.sliders = [] //array com todos os sliders usados no grafico
@@ -34,9 +34,16 @@ class Graphic extends p5{
             stopBt : "",
             restartBt : ""
         }
+
+        
+            
+        this.constructHTML()
         
         this.setup = this.setup.bind(this)
         this.draw = this.draw.bind(this)
+        this.pointsList = []
+        // this.start()
+        
     }
     
     constructHTML(){
@@ -48,7 +55,9 @@ class Graphic extends p5{
         document.body.appendChild(this.graphDiv)
         
         //adicionar canvas à div
-        this.graphDiv.appendChild(this.canvas.elt)
+        this.canvasContainer.style.height = this.hei+"px"
+        this.canvasContainer.style.width = this.wid+"px"
+        this.graphDiv.appendChild(this.canvasContainer)
         
         //criar div pra botões
         let btDiv = document.createElement("div")
@@ -106,20 +115,22 @@ class Graphic extends p5{
     
     constructResults(px){ //cor da linha e valor de x atual
         this.strokeWeight(3)        
-        this.species.forEach(specie => {
-            this.stroke(specie.color)
+        this.functions.forEach(func => {
+            this.stroke(func.color)
             let px2 = px+1
             let x1 = (px-this.origin.x)/this.scale // x1 = px1 / (px/un)
             let x2 = (px2-this.origin.x)/this.scale // x2 = px1 + 1 / px/un
-            let py1 = this.origin.y - (specie.getFunction()(x1) * this.scale) // Y1 px  =  Y1 un * E px/un
-            let py2 = this.origin.y - (specie.getFunction()(x2) * this.scale) // Y2 px  =  Y2 un * E px/un
+            let py1 = this.origin.y - (func.getFunction()(x1) * this.scale) // Y1 px  =  Y1 un * E px/un
+            let py2 = this.origin.y - (func.getFunction()(x2) * this.scale) // Y2 px  =  Y2 un * E px/un
             this.line(px,py1,px2,py2)
-            /* let obj = [ //codigo pra debug
-                x1,
-                x2,
-                specie.curryFunction()(x1),
-                specie.curryFunction()(x2)
-            ] */
+            // let obj = { //codigo pra debug
+            //     x: px,
+            //     Xfunction: x1,
+            //     Yfunction: func.getFunction()(x1),
+            //     Xgraphic: px,
+            //     Ygraphic: py1
+            // }
+            // console.table(obj)
         });
     }
     
@@ -157,54 +168,35 @@ class Graphic extends p5{
         
         
         text.innerText = legenda + ": " + slider.value
-        //se showValue for verdadeiro, cria evento para exibir o valor atual
-        /* if(showValue){    
-            slider.addEventListener('mousedown', ev=>{
-                ev.target.previousSibling.innerText = legenda + ": " + ev.target.value
-            })
-            slider.addEventListener('mouseup', ev=>{
-                ev.target.previousSibling.innerText = legenda + ": " + ev.target.value
-            })
-        } */
+        
         if(showValue){
             slider.addEventListener('change', ev=>{
-                this.species.forEach(specie=>specie.curryFunction())
+                this.functions.forEach(specie=>specie.curryFunction())
                 ev.target.previousSibling.innerText = legenda + ": " + ev.target.value
             })
-            // slider.addEventListener('mouseup', ev=>{
-                //     this.species.forEach(specie=>specie.curryFunction())
-                //     ev.target.previousSibling.innerText = legenda + ": " + ev.target.value
-                // })
-                // slider.addEventListener('keypress', ev=>{
-                    //     this.species.forEach(specie=>specie.curryFunction())
-                    //     ev.target.previousSibling.innerText = legenda + ": " + ev.target.value
-                    // })
-                }else{
-                    slider.addEventListener('mousedown', ev=>
-                    this.species.forEach(specie=>specie.curryFunction()))
-                    slider.addEventListener('mouseup', ev=>
-                    this.species.forEach(specie=>specie.curryFunction()))
-                    slider.addEventListener('keypress', ev=>
-                this.species.forEach(specie=>specie.curryFunction()))
-            }
+        
+        }else{
+            slider.addEventListener('change', ev=>
+            this.functions.forEach(specie=>specie.curryFunction()))
+        }
             
             
             // adiciona slider ao array de sliders
-            this.sliders.push({
-                slider: slider,
-                legenda: text
-            })
-            
-            //adiciona containers ao documento
-            internDiv.appendChild(text)
-            internDiv.appendChild(slider)
-            this.slidersContainer.appendChild(internDiv)
-            
-            return slider
-        }
+        this.sliders.push({
+            slider: slider,
+            legenda: text
+        })
         
-    
-    //constroi o grafico cartesiano
+        //adiciona containers ao documento
+        internDiv.appendChild(text)
+        internDiv.appendChild(slider)
+        this.slidersContainer.appendChild(internDiv)
+        
+        return slider
+    }
+        
+
+//constroi o grafico cartesiano
     getPlane(){ 
         //origem do plano fica a 6% da origem do gráfico
         // O(0.06*h , 0.94h)
@@ -223,7 +215,7 @@ class Graphic extends p5{
         //desenha flecha à direita do eixo y
         this.line(this.origin.x, 0.05*this.hei, this.origin.x+(arrowLength)*this.cos(this.PI/3), 0.05*this.hei+(arrowLength)*this.sin(this.PI/3))
         
-
+        
         //desenha eixo x
         this.line(this.origin.x, this.origin.y, 0.95*this.wid, this.origin.y)
         //desenha flecha abaixo do eixo x
@@ -236,22 +228,53 @@ class Graphic extends p5{
         
     }
 
+    mousePressed(){
+        // console.table([this.mouseX-this.origin.x, this.origin.y-this.mouseY])
+        if(!(this.mouseX>0 && this.mouseX<this.wid && this.mouseY<this.hei && this.mouseY>0))
+            return
+        this.restart()
+        this.noStroke()
+        this.fill(0)
+        this.pointsList.forEach((point)=>{
+            this.ellipse(point.x,point.y,this.hei*0.02)
+        })
+        
+        this.ellipse(this.mouseX, this.mouseY, this.hei*0.02)
+
+        this.pointsList.push({
+            x: this.mouseX,
+            y: this.mouseY
+        })
+
+        
+        this.functions.forEach((func)=>{
+            if(func instanceof LinearRegressionFunction) func.setPoint({
+                x: (this.mouseX-this.origin.x)/this.scale,
+                y: (this.origin.y-this.mouseY)/this.scale
+            })
+        })
+    }
+    
     restart(){
         this.getPlane()
         this.i = 0
     }
-
+    
     //criar especie
     //TODO: fazer método pra inserir com imagem
     //TODO: fazer método pra inserir contagem no html 
-    setSpecie(nome, funcao, cor, sliders){        
-        this.species.push(new Specie(nome, funcao, cor, sliders))
+    setSliderFunction(nome, funcao, cor, sliders){
+        this.functions.push(new SliderFunction(nome, funcao, cor, sliders))
     }
 
-    async setup(){
-        this.canvas = this.createCanvas(this.wid, this.hei)
-        this.constructHTML()
+    setLinearRegression(nome, cor){
+        this.mousePressed = this.mousePressed.bind(this)
+        this.functions.push(new LinearRegressionFunction(nome, cor))
+    }
+            
+    setup(){
+        this.canvas = this.createCanvas(this.wid, this.hei)        
+        this.canvasContainer.appendChild(this.canvas.elt)
         this.getPlane()
-        this.done = true
     }
 } 

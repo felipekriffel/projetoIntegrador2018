@@ -31,13 +31,14 @@ t =>{
 var func
 var grafico
 
-grafico = new Graphic(document.querySelector("div.grafico"), 80, 90, 0.05)
-grafico.setSpecie("Teste", funcSeno, '#ff0000', [
-    grafico.createSlider("Valor de A", true, 0, 10, 1),
-    grafico.createSlider("Valor de B", true, 0, 10, 1),
-    grafico.createSlider("Valor de C", true, 0, 5, 0.1),
-    grafico.createSlider("Valor de D", true, 0, 5, 0.1)
-])
+grafico = new Graphic(document.querySelector("div.grafico"), 80, 90, 0.01, "linear-regression")
+grafico.setLinearRegression("Teste", "#ff0000")
+// grafico.setSliderFunction("Teste", funcSeno, '#ff0000', [
+//     grafico.createSlider("Valor de A", true, 0, 10, 1),
+//     grafico.createSlider("Valor de B", true, 0, 10, 1),
+//     grafico.createSlider("Valor de C", true, 0, 5, 0.1),
+//     grafico.createSlider("Valor de D", true, 0, 5, 0.1)
+// ])
 
 /* function setup(){   
     grafico = new Graphic(document.querySelector("div.grafico"), 80, 90, 0.1)

@@ -1,4 +1,4 @@
-class Specie{
+class SliderFunction{
     constructor(name, func, color, sliders){
         //lança erro se o nome não for String
         if(typeof name !== "string") 
