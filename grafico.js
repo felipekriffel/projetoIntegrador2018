@@ -3,21 +3,41 @@ class Graphic extends p5{
     Classe de gráfico cartesiano para ser utilizado com o Framework p5.js
     */
    
-    constructor(div, widthPor, heightPor, scalePorc){
-        super(()=>{},false,false)
+    constructor(div, widthPor, heightPor, scalePorc, quadrant){
+    super(()=>{},false,false)
         this.wid = div.offsetWidth*widthPor/100 //largura do grafico 
         this.hei = div.offsetHeight*heightPor/100 //altura do grafico
-        this.scale = scalePorc * this.hei //numero de pixels por unidade
-        this.origin = {
-           x: (0.06*this.hei), //origem horizontal do grafico
-           y: (0.94*this.hei) //origem vertical do grafico
+        this.scale = scalePorc/100 * this.hei //numero de pixels por unidade
+
+        switch(quadrant){
+            case "1":
+                this.origin = {
+                    x: (0.06*this.hei), //origem horizontal do grafico
+                    y: (0.94*this.hei) //origem vertical do grafico
+                }
+                this.quad = quadrant
+                break;
+            default:
+                this.origin = {
+                    x: (0.5*this.hei), //origem horizontal do grafico
+                    y: (0.5*this.hei) //origem vertical do grafico
+                }
+                this.quad = "all"
         }
+
         this.limits = {
-            x: (0.95*this.wid), //limite horizontal do grafico
-            y: (0.06*this.hei) //limite vertical do grafico
+            start:{
+                x: (0.06*this.hei), //origem horizontal do grafico
+                y: (0.94*this.hei) //origem vertical do grafico
+                 
+            },
+            end:{
+                x: (0.95*this.wid), //limite horizontal do grafico
+                y: (0.06*this.hei) //limite vertical do grafico
+            }
         }
         this.construct = false //define se deve executar o método de construção ou não
-        this.i = 0 //valor de referencia para o iterador do grafico
+        this.i = this.floor(this.limits.start.x) //valor de referencia para o iterador do grafico
         
         this.functions = [] //array com todas as espécies envolvidas
         
@@ -35,8 +55,6 @@ class Graphic extends p5{
             restartBt : ""
         }
 
-        
-            
         this.constructHTML()
         
         this.setup = this.setup.bind(this)
@@ -105,11 +123,11 @@ class Graphic extends p5{
        //constroi resultado se o atributo 'construct' for true
        if(this.construct){
            //pega valor existente de i ou a origem do grafico caso não estiver definido
-           this.i = this.i || this.origin.x 
+           this.i = this.i || this.limits.start.x 
            //constroi gráfico usando iterador
            this.constructResults(this.i)
            //incrementa o iterador se não atingiu o limite
-           if(this.i<this.limits.x) this.i++    
+           if(this.i<this.limits.end.x) this.i++    
         }
     }
     
@@ -123,15 +141,20 @@ class Graphic extends p5{
             let py1 = this.origin.y - (func.getFunction()(x1) * this.scale) // Y1 px  =  Y1 un * E px/un
             let py2 = this.origin.y - (func.getFunction()(x2) * this.scale) // Y2 px  =  Y2 un * E px/un
             this.line(px,py1,px2,py2)
-            // let obj = { //codigo pra debug
-            //     x: px,
-            //     Xfunction: x1,
-            //     Yfunction: func.getFunction()(x1),
-            //     Xgraphic: px,
-            //     Ygraphic: py1
-            // }
-            // console.table(obj)
+            /* let obj = { //codigo pra debug
+                Xgraphic1: px,
+                Ygraphic1: py1,
+                Xfunction1: x1,
+                Yfunction1: func.getFunction()(x1),
+                Xgraphic2: px2,
+                Ygraphic2: py2,
+                Xfunction2: x2,
+                Yfunction2: func.getFunction()(x2),
+            }
+            console.table(obj) */
         });
+
+
     }
     
     //cria div para sliders e adicona ao documento
@@ -199,7 +222,7 @@ class Graphic extends p5{
 //constroi o grafico cartesiano
     getPlane(){ 
         //origem do plano fica a 6% da origem do gráfico
-        // O(0.06*h , 0.94h)
+        // O(0.06h , 0.94h)
         
         //desenha eixos do plano
         
@@ -208,23 +231,68 @@ class Graphic extends p5{
         this.stroke(255)
         this.strokeWeight(4)
         
-        //desenha eixo y
-        this.line(this.origin.x, this.origin.y, this.origin.x, 0.05*this.hei)
-        //desenha flecha à esquerda do eixo Y
-        this.line(this.origin.x, 0.05*this.hei, this.origin.x-(arrowLength)*this.cos(this.PI/3), 0.05*this.hei+(arrowLength)*this.sin(this.PI/3))
-        //desenha flecha à direita do eixo y
-        this.line(this.origin.x, 0.05*this.hei, this.origin.x+(arrowLength)*this.cos(this.PI/3), 0.05*this.hei+(arrowLength)*this.sin(this.PI/3))
-        
+        if(this.origin.y!=this.limits.end.y){
+            this.line(this.origin.x,
+                this.origin.y,
+                this.origin.x,
+                this.limits.end.y)
+            
+            this.line(this.origin.x,
+                this.limits.end.y,
+                this.origin.x-(arrowLength)*this.cos(this.PI/3),
+                this.limits.end.y+(arrowLength)*this.sin(this.PI/3))
+            this.line(this.origin.x,
+                this.limits.end.y,
+                this.origin.x+(arrowLength)*this.cos(this.PI/3),
+             this.limits.end.y+(arrowLength)*this.sin(this.PI/3))
+        }
+        if(this.origin.x!=this.limits.end.x){
+            this.line(this.origin.x,
+                this.origin.y,
+                this.limits.end.x,
+                this.origin.y)
+        //desenha flecha abaixo do eixo x
+            this.line(this.limits.end.x,
+                this.origin.y,
+                this.limits.end.x-(arrowLength*this.cos(-this.PI/6)) ,
+                this.origin.y-(arrowLength*this.sin(-this.PI/6)))
+            //desenha flecha acima do eixo x
+            this.line(this.limits.end.x,
+                this.origin.y,
+                this.limits.end.x-(arrowLength*this.cos(-this.PI/6)),
+                this.origin.y+(arrowLength*this.sin(-this.PI/6)))
+        }
+        if(this.origin.y!=this.limits.start.y){
+            this.line(this.origin.x, this.origin.y, this.origin.x, this.limits.start.y)
+            
+            this.line(this.origin.x, 
+                this.limits.start.y,
+                this.origin.x-(arrowLength)*this.cos(this.PI/3),
+                this.limits.start.y-(arrowLength)*this.sin(this.PI/3))
+            this.line(this.origin.x,
+                this.limits.start.y,
+                this.origin.x+(arrowLength)*this.cos(this.PI/3),
+                this.limits.start.y-(arrowLength)*this.sin(this.PI/3))
+        }
+        if(this.origin.x!=this.limits.start.x){
+            this.line(this.origin.x,
+                this.origin.y,
+                this.limits.start.x,
+                this.origin.y)
+                //desenha flecha abaixo do eixo x
+            this.line(this.limits.start.x,
+                this.origin.y,
+                this.limits.start.x+(arrowLength*this.cos(-this.PI/6)) ,
+                this.origin.y-(arrowLength*this.sin(-this.PI/6)))
+            //desenha flecha acima do eixo x
+            this.line(this.limits.start.x,
+                this.origin.y,
+                this.limits.start.x+(arrowLength*this.cos(-this.PI/6)),
+                this.origin.y+(arrowLength*this.sin(-this.PI/6)))
+        }
         
         //desenha eixo x
-        this.line(this.origin.x, this.origin.y, 0.95*this.wid, this.origin.y)
-        //desenha flecha abaixo do eixo x
-        this.line(0.95*this.wid,this.origin.y, 0.95*this.wid-(arrowLength*this.cos(-this.PI/6)) , this.origin.y-(arrowLength*this.sin(-this.PI/6)))
-        //desenha flecha acima do eixo x
-        this.line(0.95*this.wid,
-            this.origin.y,
-            0.95*this.wid-(arrowLength*this.cos(-this.PI/6)) ,
-            this.origin.y+(arrowLength*this.sin(-this.PI/6)))
+        
         
     }
 
@@ -263,6 +331,11 @@ class Graphic extends p5{
     //criar especie
     //TODO: fazer método pra inserir com imagem
     //TODO: fazer método pra inserir contagem no html 
+
+    setFunction(nome, funcao, cor){
+        this.functions.push(new Function(nome,funcao,cor))
+    }
+
     setSliderFunction(nome, funcao, cor, sliders){
         this.functions.push(new SliderFunction(nome, funcao, cor, sliders))
     }
