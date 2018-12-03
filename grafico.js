@@ -19,7 +19,7 @@ class Graphic extends p5{
                 break;
             default:
                 this.origin = {
-                    x: (0.5*this.hei), //origem horizontal do grafico
+                    x: (0.5*this.wid), //origem horizontal do grafico
                     y: (0.5*this.hei) //origem vertical do grafico
                 }
                 this.quad = "all"

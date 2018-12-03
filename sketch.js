@@ -35,11 +35,12 @@ t =>{
 var func
 var grafico
 
-grafico = new Graphic(document.querySelector("div.grafico"), 80, 90, 10, "all")
-// grafico.setSliderFunction("Teste", funcPrimGrau, '#ff0000', [
-//     grafico.createSlider("Valor de A", true, 0, 10, 1),
-//     grafico.createSlider("Valor de B", true, 0, 10, 1)
+grafico = new Graphic(document.querySelector("div.grafico"), 100, 90, 5, "all")
+// grafico.setSliderFunction("Teste", funcSegGrau, '#00ff00', [
+//     grafico.createSlider("Valor de A", true, -5, 5, 0.5),
+//     grafico.createSlider("Valor de B", true, -5, 5, 0.5),
+//     grafico.createSlider("valor de C", true, -20, 20, 1)
 // ])
-// grafico.setLinearRegression("Teste", "#ff0000")
 
-grafico.setFunction("Oba", x=>{return Math.log(x)},"#ff0000")
+// grafico.setFunction("Oba", x=>{return Math.log(x)},"#ff0000")
+grafico.setLinearRegression("Teste", "#ff0000")
